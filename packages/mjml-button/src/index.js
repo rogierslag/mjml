@@ -44,6 +44,14 @@ const baseStyles = {
     lineHeight: '100%'
   }
 }
+const heightFromBorder = (borderDef) => {
+  // So we can handle `1px black solid` and `solid 2px black`
+  return borderDef.split(' ')
+    .filter(e => e !== '')
+    .filter(e => e.endsWith('px'))
+    .map(parseInt)
+    .reduce((e, val) => e + val, 0)
+}
 
 @MJMLElement
 class Button extends Component {
@@ -55,42 +63,61 @@ class Button extends Component {
 
     return helpers.merge({}, baseStyles, {
       table: {
-        width: mjAttribute('width'),
+        width: defaultUnit(mjAttribute('width'), "px")
       },
       td: {
-	      // padding: defaultUnit(mjAttribute('padding'), "px"),
-        borderRadius: defaultUnit(mjAttribute('border-radius'), "px")
+        // padding: defaultUnit(mjAttribute('padding'), "px"),
+        borderRadius: defaultUnit(mjAttribute('border-radius'), "px"),
+        width: defaultUnit(mjAttribute('width'), "px"),
+        cursor: 'pointer'
       },
       a: {
         color: mjAttribute('color'),
-	      display: 'inline-block',
-	      backgroundColor: this.bgColor(),
-	  border: this.border('border'),
-	  borderBottom: this.border('border-bottom'),
-	  borderLeft: this.border('border-left'),
-	  borderRight: this.border('border-right'),
-	  borderTop: this.border('border-top'),
+        display: 'block',
+        backgroundColor: this.bgColor(),
+        border: this.border('border'),
+        borderBottom: this.border('border-bottom'),
+        borderLeft: this.border('border-left'),
+        borderRight: this.border('border-right'),
+        borderTop: this.border('border-top'),
         borderRadius: defaultUnit(mjAttribute('border-radius'), "px"),
+        height: this.height(),
         fontFamily: mjAttribute('font-family'),
         fontSize: defaultUnit(mjAttribute('font-size'), "px"),
         fontStyle: mjAttribute('font-style'),
         fontWeight: mjAttribute('font-weight'),
-	      padding: defaultUnit(mjAttribute('inner-padding'), "px"),
+        padding: defaultUnit(mjAttribute('inner-padding'), "px"),
         textDecoration: mjAttribute('text-decoration'),
         textTransform: mjAttribute('text-transform'),
+        verticalAlign: mjAttribute('vertical-align'),
+        margin: '0px'
       }
     })
   }
 
-  border(type) {
-	  const { mjAttribute } = this.props
-    return mjAttribute(type) === "none" ? `1px solid ${this.bgColor()}` : mjAttribute(type)
+  border (type) {
+    const { mjAttribute } = this.props
+    return mjAttribute(type) === "none" ? `solid 1px ${this.bgColor()}` : mjAttribute(type)
   }
 
-  bgColor() {
-	  const { mjAttribute } = this.props
+  bgColor () {
+    const { mjAttribute } = this.props
 
-	  return mjAttribute('background-color') === "none" ? "" : mjAttribute('background-color')
+    return mjAttribute('background-color') === "none" ? "" : mjAttribute('background-color')
+  }
+
+  height () {
+    const { mjAttribute } = this.props
+
+    const intendedHeight = mjAttribute('height')
+    const verticalPaddings = parseInt(mjAttribute('inner-padding')) * 2 // top and bottom
+
+    const topBorderToUse = mjAttribute('border-top') !== "none" ? 'border-top' : 'border'
+    const topBorder = this.border(topBorderToUse) ? heightFromBorder(this.border(topBorderToUse)) : heightFromBorder(this.border('border'))
+    const bottomBorderToUse = mjAttribute('border-bottom') !== "none" ? 'border-bottom' : 'border'
+    const bottomBorder = this.border(bottomBorderToUse) ? heightFromBorder(this.border(bottomBorderToUse)) : heightFromBorder(this.border('border'))
+
+    return intendedHeight - verticalPaddings - topBorder - bottomBorder
   }
 
   renderButton () {
