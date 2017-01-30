@@ -55,14 +55,17 @@ class Button extends Component {
 
     return helpers.merge({}, baseStyles, {
       table: {
-        width: mjAttribute('width')
+        width: mjAttribute('width'),
       },
       td: {
-        borderRadius: defaultUnit(mjAttribute('border-radius'), "px"),
+	      // padding: defaultUnit(mjAttribute('padding'), "px"),
+        borderRadius: defaultUnit(mjAttribute('border-radius'), "px")
       },
       a: {
         color: mjAttribute('color'),
-      border: mjAttribute('border'),
+	      display: 'inline-block',
+	      backgroundColor: this.bgColor(),
+	  border: mjAttribute('border'),
 	  borderBottom: mjAttribute('border-bottom'),
 	  borderLeft: mjAttribute('border-left'),
 	  borderRight: mjAttribute('border-right'),
@@ -77,6 +80,12 @@ class Button extends Component {
         textTransform: mjAttribute('text-transform'),
       }
     })
+  }
+
+  bgColor() {
+	  const { mjAttribute, defaultUnit } = this.props
+
+	  return mjAttribute('background-color') === "none" ? "" : mjAttribute('background-color')
   }
 
   renderButton () {
@@ -109,16 +118,16 @@ class Button extends Component {
         cellSpacing="0"
         data-legacy-align={mjAttribute('align')}
         data-legacy-border="0"
-        style="100%">
+        style={this.styles.table}>
         <tbody>
           <tr>
             <td>
-              <table border="0" cellspacing="0" cellpadding="0">
+              <table border="0" cellSpacing="0" cellPadding="0">
                 <tbody>
                   <tr>
                     <td
                       data-legacy-align="center"
-                      data-legacy-bgcolor={mjAttribute('background-color') === "none" ? "" : mjAttribute('background-color')}
+                      data-legacy-bgcolor={this.bgColor()}
                       data-legacy-valign={mjAttribute('vertical-align')}
                       style={this.styles.td}>
                       {this.renderButton()}
