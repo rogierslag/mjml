@@ -65,11 +65,11 @@ class Button extends Component {
         color: mjAttribute('color'),
 	      display: 'inline-block',
 	      backgroundColor: this.bgColor(),
-	  border: mjAttribute('border'),
-	  borderBottom: mjAttribute('border-bottom'),
-	  borderLeft: mjAttribute('border-left'),
-	  borderRight: mjAttribute('border-right'),
-	  borderTop: mjAttribute('border-top'),
+	  border: this.border('border'),
+	  borderBottom: this.border('border-bottom'),
+	  borderLeft: this.border('border-left'),
+	  borderRight: this.border('border-right'),
+	  borderTop: this.border('border-top'),
         borderRadius: defaultUnit(mjAttribute('border-radius'), "px"),
         fontFamily: mjAttribute('font-family'),
         fontSize: defaultUnit(mjAttribute('font-size'), "px"),
@@ -82,8 +82,13 @@ class Button extends Component {
     })
   }
 
+  border(type) {
+	  const { mjAttribute } = this.props
+    return mjAttribute(type) === "none" ? `1px solid ${this.bgColor()}` : mjAttribute(type)
+  }
+
   bgColor() {
-	  const { mjAttribute, defaultUnit } = this.props
+	  const { mjAttribute } = this.props
 
 	  return mjAttribute('background-color') === "none" ? "" : mjAttribute('background-color')
   }
